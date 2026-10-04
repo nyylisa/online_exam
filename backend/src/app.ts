@@ -68,6 +68,11 @@ app.use(
     },
   })
 );
+// Health check endpoint for Render (must be above other routes to avoid global auth middlewares)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api', sessionRoutes);
 app.use('/api', gradingRoutes);
@@ -81,10 +86,6 @@ app.use('/api', reportRoutes);
 app.use('/api', notificationRoutes);
 app.use('/api', rosterRoutes);
 
-// Health check endpoint for Render (to keep it awake)
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 
 // Global error handler
