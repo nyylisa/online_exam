@@ -4,9 +4,11 @@ import path from "path";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.1.7"],
 
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
+  ...(process.env.VERCEL ? {} : {
+    turbopack: {
+      root: path.resolve(__dirname),
+    },
+  }),
 
   experimental: {
     optimizePackageImports: ["lucide-react", "@mui/material"],
