@@ -1,7 +1,7 @@
 // backend/src/services/student.service.ts
 import prisma from '../config/database.js';
 import { Prisma } from '@prisma/client';
-import { supabase } from '../config/supabase.js';
+import { supabase, supabaseAdmin } from '../config/supabase.js';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { broadcastToTeacher, broadcast } from './session.service.js';
@@ -208,7 +208,7 @@ export async function processMathUpload(
 
   let fileUrl: string;
 
-  const { data: uploadData, error: uploadError } = await supabase.storage
+  const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
     .from('math-uploads')
     .upload(storagePath, file.buffer, {
       contentType: file.mimetype,
@@ -223,7 +223,7 @@ export async function processMathUpload(
     );
     fileUrl = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
   } else {
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = supabaseAdmin.storage
       .from('math-uploads')
       .getPublicUrl(uploadData.path);
     fileUrl = urlData.publicUrl;

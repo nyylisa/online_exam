@@ -128,24 +128,22 @@ export function ManualGrading() {
     }
   };
 
-  const openInNewTab = (fileUrl: string) => {
+  const openInNewTab = async (fileUrl: string) => {
     if (fileUrl.startsWith('data:')) {
+      const newTab = window.open('', '_blank');
       try {
-        const arr = fileUrl.split(',');
-        const mimeMatch = arr[0].match(/:(.*?);/);
-        if (!mimeMatch) return;
-        const mime = mimeMatch[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        const blob = new Blob([u8arr], { type: mime });
+        const res = await fetch(fileUrl);
+        const blob = await res.blob();
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        if (newTab) {
+          newTab.location.href = url;
+        } else {
+          window.location.href = url;
+        }
       } catch (e) {
         console.error("Failed to open data URL", e);
+        if (newTab) newTab.close();
+        alert("Failed to open the file.");
       }
     } else {
       window.open(fileUrl, '_blank');
